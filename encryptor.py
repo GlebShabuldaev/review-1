@@ -2,9 +2,10 @@
 import argparse
 from train import Train
 from hack import Hack
-from caesar import Caesar
+from caesar import do_caesar
 from vigenere import Vigenere
-import json
+import pickle
+from enum import Enum
 
 parser = argparse.ArgumentParser(description='encode a code')
 parser.add_argument('mode', type=str, help='Execution mode')
@@ -17,22 +18,18 @@ parser.add_argument('--model_file', type=str, help='Statistics dump')
 args = parser.parse_args()
 
 
-def mode_get(mode):
-    """Determines which operation is going to be handeled"""
-    modes = {
-        "encode":  1,
-        "decode": -1,
-        "train":  2,
-        "hack":  3
-    }
-    return modes.get(mode, "Invalid operation")
+class Mode(Enum):
+    encode = 1
+    decode = -1
+    train = 2
+    hack = 3
 
 
 def input_text(mode):
     """Input of the text"""
     if mode == 3:
-        with open(args.model_file) as f:
-            model = json.load(f)
+        with open(args.model_file, "rb") as f:
+            model = pickle.load(f)
             return model
     if mode == 2:
         with open(args.text_file) as f:
@@ -49,28 +46,31 @@ def input_text(mode):
 
 def write_text(text, mode):
     """Writing text output"""
-    if args.output_file is not None:
+    if mode == 2:
+        with open(args.model_file, "wb") as f:
+            pickle.dump(text, f)
+    elif args.output_file is not None:
         with open(args.output_file, "w") as f:
             f.write(text)
-    elif mode == 2:
-        with open(args.model_file, "w") as f:
-            json.dump(text, f, ensure_ascii=False)
     else:
         print(text)
 
+def main():
+    mode = Mode[args.mode].value
+    word = input_text(mode)
+    if mode == 1 or mode == -1:
+        if args.cipher == 'caesar':
+            write_text(do_caesar(mode, word, args.key), mode)
+        else:
+            write_text(Vigenere().do_vigenere(mode, word, args.key), mode)
+    elif mode == 2:
+        write_text(Train().letter_density(word), mode)
+    elif mode == 3:
+        model = input_text(mode)
+        word = input_text(1)
+        key = Hack().hack(model, word)
+        text = do_caesar(-1, word, key)
+        write_text(text, mode)
 
-mode = mode_get(args.mode)
-word = input_text(mode)
-if mode == 1 or mode == -1:
-    if args.cipher == 'caesar':
-        write_text(Caesar().do_caesar(mode, word, args.key), mode)
-    else:
-        write_text(Vigenere().do_vigenere(mode, word, args.key), mode)
-elif mode == 2:
-    write_text(Train().letter_density(word), mode)
-elif mode == 3:
-    model = input_text(mode)
-    word = input_text(1)
-    key = Hack().hack(model, word)
-    text = Caesar().do_caesar(-1, word, key)
-    write_text(text, mode)
+if __name__ == '__main__': 
+    main()

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from collections import Counter
 from alphabet import Alphabet
-
+from sys import exit
 
 @dataclass
 class Train:
@@ -16,10 +16,13 @@ class Train:
         """Removes every symbol from the text except 
         for letters in the alphabet"""
         text_c = ''
-        for i in range(len(text)):
-            alph = Alphabet().get_lang(text[i])
-            if text[i] in alph[0]:
-                text_c += text[i]
+        if len(text) == 0:
+            print("Wrong text input")
+            exit(0)
+        for i in text:
+            alph = Alphabet().get_lang(i)
+            if i in alph[0]:
+                text_c += i
         return text_c
 
     def letter_density(self, text: str) -> dict:

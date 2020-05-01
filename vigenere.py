@@ -1,6 +1,7 @@
 from alphabet import Alphabet
 from dataclasses import dataclass
 import sys
+from utils import get_key
 
 
 @dataclass
@@ -36,15 +37,16 @@ class Vigenere:
         for i in range(len(word)):
             symbol_1 = word[i]
             symbol_2 = key_word[i]
-            alph = Alphabet().get_lang(symbol_1)
-            Alphabet().check_symbol(word[i], alph)
-            if Alphabet().get_lang(symbol_2) != alph:
+            al = Alphabet()
+            alph = al.get_lang(symbol_1)
+            al.check_symbol(word[i], alph)
+            if al.get_lang(symbol_2) != alph:
                 print('ERROR: Key is in different language')
                 sys.exit(0)
-            c_1 = Alphabet().case(symbol_1, alph)  # Register of a word's symbol
-            c_2 = Alphabet().case(symbol_2, alph)  # Register of a key's symbol
-            n = alph[c_1][symbol_1]                # Word's symbol place in the alphabet
-            n_1 = alph[4][c_1]                     # Amount of letters in the alphabet + 1
-            k = alph[c_2][symbol_2]                # Key's symbol place in the alphabet
-            unknwn_word += Alphabet().get_key(alph[c_1], (n + n_1/2 + m*(k - n_1/2)) % n_1)
+            symbol_type = al.check_type(symbol_1, alph)  # Register of a word's symbol
+            key_type = al.check_type(symbol_2, alph)  # Register of a key's symbol
+            symbol_position = alph[symbol_type][symbol_1]                # Word's symbol place in the alphabet
+            alph_letters = alph[4][symbol_type]                     # Amount of letters in the alphabet + 1
+            key_position = alph[key_type][symbol_2]                # Key's symbol place in the alphabet
+            unknwn_word += get_key(alph[symbol_type], (symbol_position + alph_letters/2 + m*(key_position - alph_letters/2)) % alph_letters)
         return unknwn_word

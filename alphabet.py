@@ -1,29 +1,30 @@
 from dataclasses import dataclass
 import sys
+from typing import List
 import string
 
 
 @dataclass
 class Alphabet:
     def __init__(self):
-        self.l_e = string.ascii_lowercase
-        self.l_e = {x: self.l_e.index(x) for x in self.l_e}
-        self.l_r = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
-        self.l_r = {x: self.l_r.index(x) for x in self.l_r}
-        self.u_r = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
-        self.u_r = {x: self.u_r.index(x) for x in self.u_r}
-        self.u_e = string.ascii_uppercase
-        self.u_e = {x: self.u_e.index(x) for x in self.u_e}
+        self.lower_eng = string.ascii_lowercase
+        self.lower_eng = {x: self.lower_eng.index(x) for x in self.lower_eng}
+        self.lower_rus = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
+        self.lower_rus = {x: self.lower_rus.index(x) for x in self.lower_rus}
+        self.upper_rus = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
+        self.upper_rus = {x: self.upper_rus.index(x) for x in self.upper_rus}
+        self.upper_eng = string.ascii_uppercase
+        self.upper_eng = {x: self.upper_eng.index(x) for x in self.upper_eng}
         self.punc = string.punctuation
         self.punc = {x: self.punc.index(x) for x in self.punc}
-        self.blank = ' \n\t'
+        self.blank = string.whitespace
         self.blank = {x: self.blank.index(x) for x in self.blank}
-        self.N_e = [len(self.l_e), len(self.u_e), len(self.punc), len(self.blank)]
-        self.N_r = [len(self.l_r), len(self.u_r), len(self.punc), len(self.blank)]
-        self.eng = [self.l_e, self.u_e, self.punc, self.blank, self.N_e]
-        self.ru = [self.l_r, self.u_r, self.punc, self.blank, self.N_r]
+        self.N_e = [len(self.lower_eng), len(self.upper_eng), len(self.punc), len(self.blank)]
+        self.N_r = [len(self.lower_rus), len(self.upper_rus), len(self.punc), len(self.blank)]
+        self.eng = [self.lower_eng, self.upper_eng, self.punc, self.blank, self.N_e]
+        self.ru = [self.lower_rus, self.upper_rus, self.punc, self.blank, self.N_r]
 
-    def case(self, symbol: str, alph: list) -> int:
+    def check_type(self, symbol: str, alph: List[str]) -> int:
         """Determines if the symbol is lower/uppercase, punctuation or blank space"""
         self.check_symbol(symbol, alph)
         if symbol in alph[0]:
@@ -35,29 +36,21 @@ class Alphabet:
         elif symbol in alph[3]:
             return 3
         else:
-            print("ERROR: Unknown symbol")
+            print("ERROR: Unknown symbol %s" % (symbol))
             sys.exit(0)
 
     def get_lang(self, symbol: str) -> list:
         """Determines language of a symbol"""
-        if symbol in self.u_r or symbol in self.l_r:
+        if symbol in self.upper_rus or symbol in self.lower_rus:
             return self.ru
         else:
             return self.eng
 
     @staticmethod
-    def get_key(dic, value):
-        """Returns key by value from a dict"""
-        for k, v in dic.items():
-            if v == value:
-                return k
-
-    @staticmethod
-    def check_symbol(symbol: str, alph: list) -> None:
+    def check_symbol(symbol: str, alph: List[str]) -> None:
         """Checks if the symbol was typed correctly"""
-        for i in range(len(alph)):
-            if symbol in alph[i]:
+        for i in alph:
+            if symbol in i:
                 return
-        else:
-            print("ERROR: Unknown symbol")
-            sys.exit(0)
+        print("ERROR: Unknown symbol %s" % (symbol))
+        sys.exit(0)
