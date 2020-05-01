@@ -39,7 +39,7 @@ class Alphabet:
             print("ERROR: Unknown symbol %s" % (symbol))
             sys.exit(0)
 
-    def get_lang(self, symbol: str) -> list:
+    def get_lang(self, symbol: str) -> List[str]:
         """Determines language of a symbol"""
         if symbol in self.upper_rus or symbol in self.lower_rus:
             return self.ru
