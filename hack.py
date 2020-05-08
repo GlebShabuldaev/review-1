@@ -1,4 +1,4 @@
-from caesar import do_caesar
+from caesar import Caesar
 from alphabet import Alphabet
 from train import Train
 from dataclasses import dataclass
@@ -21,8 +21,8 @@ class Hack:
         sums = {}
         alph = Alphabet().get_lang(list(model.keys())[0])
         for key in alph[0].values():
-            text = do_caesar(-1, word.lower(), key)
-            dic = Train().letter_density(text)
+            text = Caesar(key).do(-1, word.lower())
+            dic = defaultdict(lambda: 0, Train().letter_density(text))
             sums[key] = self.compare(model, dic)
         return sums
 
@@ -34,6 +34,5 @@ class Hack:
             if Alphabet().get_lang(symbol) != Alphabet().get_lang(list(dic1.keys())[0]):
                 print('ERROR: Text is written in multiple languages')
                 sys.exit(0)
-            dic2 = defaultdict(lambda: 0, dic2)
             sum += (dic1[symbol] - dic2[symbol])**2
         return sum

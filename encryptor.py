@@ -2,7 +2,7 @@
 import argparse
 from train import Train
 from hack import Hack
-from caesar import do_caesar
+from caesar import Caesar
 from vigenere import Vigenere
 import pickle
 from enum import Enum
@@ -19,19 +19,19 @@ args = parser.parse_args()
 
 
 class Mode(Enum):
-    encode = 1
-    decode = -1
-    train = 2
-    hack = 3
+    ENCODE = 1
+    DECODE = -1
+    TRAIN = 2
+    HACK = 3
 
 
 def input_text(mode):
     """Input of the text"""
-    if mode == 3:
+    if mode == Mode.HACK:
         with open(args.model_file, "rb") as f:
             model = pickle.load(f)
             return model
-    if mode == 2:
+    if mode == Mode.TRAIN:
         with open(args.text_file) as f:
             word = f.read()
             return word
@@ -46,7 +46,7 @@ def input_text(mode):
 
 def write_text(text, mode):
     """Writing text output"""
-    if mode == 2:
+    if mode == Mode.TRAIN:
         with open(args.model_file, "wb") as f:
             pickle.dump(text, f)
     elif args.output_file is not None:
@@ -56,20 +56,20 @@ def write_text(text, mode):
         print(text)
 
 def main():
-    mode = Mode[args.mode].value
+    mode = Mode[args.mode.upper()]
     word = input_text(mode)
-    if mode == 1 or mode == -1:
+    if mode.name in ('ENCODE', 'DECODE'):
         if args.cipher == 'caesar':
-            write_text(do_caesar(mode, word, args.key), mode)
+            write_text(Caesar(args.key).do(mode.value, word), mode)
         else:
-            write_text(Vigenere().do_vigenere(mode, word, args.key), mode)
-    elif mode == 2:
+            write_text(Vigenere().do(mode.value, word, args.key), mode)
+    elif mode == Mode.TRAIN:
         write_text(Train().letter_density(word), mode)
-    elif mode == 3:
+    elif mode == Mode.HACK:
         model = input_text(mode)
         word = input_text(1)
         key = Hack().hack(model, word)
-        text = do_caesar(-1, word, key)
+        text = Caesar(key).do(-1, word)
         write_text(text, mode)
 
 if __name__ == '__main__': 

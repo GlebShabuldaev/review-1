@@ -30,7 +30,7 @@ class Vigenere:
             print('ERROR: Key contains letters from defferent languages')
             exit(0)
 
-    def do_vigenere(self, m: int, word: str, key: str) -> str:
+    def do(self, m: int, word: str, key: str) -> str:
         """Vigenere encryption and decryption"""
         unknwn_word = ''
         key_word = self.make_key_word(word, key)

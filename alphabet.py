@@ -39,7 +39,7 @@ class Alphabet:
             print("ERROR: Unknown symbol %s" % (symbol))
             sys.exit(0)
 
-    def get_lang(self, symbol: str) -> List[str]:
+    def get_lang(self, symbol: str) -> list:
         """Determines language of a symbol"""
         if symbol in self.upper_rus or symbol in self.lower_rus:
             return self.ru
@@ -52,5 +52,5 @@ class Alphabet:
         for i in alph:
             if symbol in i:
                 return
-        print("ERROR: Unknown symbol %s" % (symbol))
+        print(f"ERROR: Unknown symbol {symbol}")
         sys.exit(0)
