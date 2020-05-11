@@ -58,7 +58,7 @@ def write_text(text, mode):
 def main():
     mode = Mode[args.mode.upper()]
     word = input_text(mode)
-    if mode.name in ('ENCODE', 'DECODE'):
+    if mode in (Mode.ENCODE, Mode.DECODE):
         if args.cipher == 'caesar':
             write_text(Caesar(args.key).do(mode.value, word), mode)
         else:
