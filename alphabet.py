@@ -36,7 +36,7 @@ class Alphabet:
         elif symbol in alph[3]:
             return 3
         else:
-            print("ERROR: Unknown symbol %s" % (symbol))
+            print(f"ERROR: Unknown symbol {symbol}")
             sys.exit(0)
 
     def get_lang(self, symbol: str) -> list:
